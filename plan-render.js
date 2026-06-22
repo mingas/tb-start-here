@@ -162,8 +162,10 @@
   + '.hp-foods{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:20px}'
   + '.hp-fcol h5{font:700 12px var(--sans);letter-spacing:.04em;text-transform:uppercase;margin:0 0 10px}'
   + '.hp-fcol.good h5{color:var(--sage)}.hp-fcol.limit h5{color:var(--rose)}'
-  + '.hp-food{display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)}.hp-food:last-child{border-bottom:none}'
-  + '.hp-food .nm{flex:1;font-size:13.5px;color:var(--ink)}'
+  + '.hp-food{display:flex;align-items:center;gap:11px;padding:9px 8px;margin:0 -8px;border-bottom:1px solid var(--line);border-radius:8px;cursor:pointer;transition:background .12s}.hp-food:last-child{border-bottom:none}'
+  + '.hp-food:hover{background:#FBF7EC}.hp-food:hover .nm{text-decoration:underline}'
+  + '.hp-food .nm{flex:1;font-size:13.5px;color:var(--accent);font-weight:500;display:flex;align-items:center;gap:6px}'
+  + '.hp-food .nm .ar{color:var(--muted);font-size:11px;opacity:.5;text-decoration:none;display:inline-block}'
   + '.hp-food .bar{width:60px;height:6px;border-radius:3px;background:#EDE7D7;overflow:hidden}.hp-food .bar i{display:block;height:100%}'
   + '.hp-food.g .bar i{background:var(--sage)}.hp-food.l .bar i{background:var(--rose)}'
   + '.hp-food .sc{font-family:var(--serif);font-size:15px;width:30px;text-align:right}.hp-food.g .sc{color:var(--sage)}.hp-food.l .sc{color:var(--rose)}'
@@ -175,13 +177,22 @@
   + '.hp-mini a.go{font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:1px}'
   + '.hp-mini.tool{background:linear-gradient(160deg,var(--accent2),var(--accent));color:#EAEFF6}'
   + '.hp-mini.tool .tag{color:var(--gold-soft)}.hp-mini.tool h4{color:#fff}.hp-mini.tool p{color:#C4D0DE}.hp-mini.tool a.go{color:#fff;border-color:rgba(255,255,255,.35)}'
-  + '.hp-supp{display:flex;flex-direction:column;gap:9px}.hp-supp .s{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13.5px}'
-  + '.hp-supp .s .links{display:flex;gap:8px;align-items:center}'
-  + '.hp-supp .s a{font-size:11.5px;text-decoration:none;color:var(--muted);border-bottom:1px solid var(--line)}'
-  + '.hp-supp .s a.buy{color:var(--gold-d);border-color:var(--gold-soft);font-weight:600}'
+  + '.hp-supp{display:flex;flex-direction:column;gap:0}'
+  + '.hp-supp .s{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13.5px;padding:11px 0;border-top:1px solid var(--line)}.hp-supp .s:first-child{border-top:none}'
+  + '.hp-supp .s .nm{font-weight:600;color:var(--accent)}'
+  + '.hp-supp .s .links{display:flex;gap:14px;align-items:center;margin-left:auto}'
+  + '.hp-supp .s a{font-size:12px;text-decoration:none;color:var(--accent);font-weight:600;border-bottom:1.5px solid var(--gold-soft);padding-bottom:1px;white-space:nowrap}'
+  + '.hp-supp .s a:hover{border-color:var(--gold-d)}.hp-supp .s a.buy{color:var(--gold-d)}'
   + '.hp-tier{font:700 9.5px var(--sans);padding:2px 7px;border-radius:5px;letter-spacing:.03em;text-transform:uppercase}'
   + '.hp-tier.works{background:var(--sage-soft);color:#3C6147}.hp-tier.some{background:#F4E9CF;color:#8A6B23}.hp-tier.unproven{background:#EEE7DA;color:#7A7160}'
-  + '.hp-qs{display:flex;flex-direction:column}.hp-qs a{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--accent);font-size:13.5px;font-weight:500}.hp-qs a:last-child{border-bottom:none}.hp-qs a span{color:var(--gold-d)}'
+  + '.hp-qs{display:flex;flex-direction:column}.hp-qs a{display:flex;justify-content:space-between;gap:10px;padding:11px 8px;margin:0 -8px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--accent);font-size:13.5px;font-weight:500;border-radius:8px;transition:background .12s}.hp-qs a:last-child{border-bottom:none}.hp-qs a:hover{background:#FBF7EC;text-decoration:underline}.hp-qs a .ar{color:var(--gold-d);flex:none;text-decoration:none}'
+  /* see-all + more tools + clickable helpers */
+  + '.hp-seeall{display:inline-flex;align-items:center;gap:6px;margin-top:13px;font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:2px}'
+  + '.hp-seeall:hover{border-color:var(--gold-d)}.hp-seeall .ar{color:var(--gold-d)}'
+  + '.hp-tools{display:flex;flex-wrap:wrap;gap:9px}'
+  + '.hp-tchip{display:inline-flex;align-items:center;gap:7px;background:var(--paper);border:1.5px solid var(--line);border-radius:11px;padding:9px 14px;font:600 12.5px var(--sans);color:var(--accent);text-decoration:none;transition:.13s}'
+  + '.hp-tchip:hover{border-color:var(--gold-soft);background:#FFFDF8;transform:translateY(-1px)}.hp-tchip .ar{color:var(--gold-d)}'
+  + '.hp-mini .hp-seeall{margin-top:14px}'
   /* this week */
   + '.hp-week{background:var(--paper);border:1px solid var(--gold-soft);border-radius:18px;box-shadow:0 1px 2px rgba(17,41,74,.05),0 12px 30px -16px rgba(17,41,74,.18);padding:22px;display:flex;gap:18px;align-items:center;margin-top:22px}'
   + '.hp-week .badge{flex:none;width:52px;height:52px;border-radius:14px;background:var(--gold);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:12px;text-align:center;line-height:1.1}'
@@ -320,38 +331,64 @@
         + '<div><h4>' + esc(l.title) + '</h4><p>' + esc(l.why) + link + '</p></div></div>';
     }).join('');
 
-    // foods
+    // foods (deep-linked, clearly clickable)
     function foodRow(f, cls) {
       var pct = Math.max(6, Math.min(100, f.score));
-      return '<a class="hp-food ' + cls + '" target="_blank" rel="noopener" href="' + esc(f.href) + '" style="text-decoration:none">'
-        + '<span class="nm">' + esc(f.name) + '</span>'
+      return '<a class="hp-food ' + cls + '" target="_blank" rel="noopener" href="' + esc(f.href) + '">'
+        + '<span class="nm">' + esc(f.name) + '<span class="ar">\u2197</span></span>'
         + '<span class="bar"><i style="width:' + pct + '%"></i></span>'
         + '<span class="sc">' + f.score + '</span></a>';
     }
     var boosters = plan.foods.boosters.map(function (f) { return foodRow(f, 'g'); }).join('');
     var limits = plan.foods.limits.map(function (f) { return foodRow(f, 'l'); }).join('');
 
-    // tool
+    function seeAll(href, label) {
+      return '<a class="hp-seeall" target="_blank" rel="noopener" href="' + esc(href) + '">' + esc(label) + ' <span class="ar">\u2192</span></a>';
+    }
+
+    // primary tool (navy card)
     var tool = '<div class="hp-mini tool hp-card"><div class="tag">Your tool</div>'
       + '<h4>' + esc(plan.tool.name) + '</h4><p>' + esc(plan.tool.blurb) + '</p>'
       + '<a class="go" target="_blank" rel="noopener" href="' + esc(plan.tool.href) + '">Open the tool \u2192</a></div>';
 
-    // supplements
+    // supplements (clean aligned rows)
     var supps = plan.supplements.map(function (s) {
+      var why = s.info ? '<a href="' + esc(s.info) + '" target="_blank" rel="noopener">Why \u2192</a>' : '';
       var buy = s.recommends ? '<a class="buy" href="' + esc(s.recommends) + '" rel="sponsored nofollow noopener" target="_blank">Shop \u2192</a>' : '';
-      return '<div class="s"><span>' + esc(s.name) + '</span><span class="links">'
+      return '<div class="s"><span class="nm">' + esc(s.name) + '</span>'
         + '<span class="hp-tier ' + esc(s.tier) + '">' + tierLabel(s.tier) + '</span>'
-        + (s.info ? '<a target="_blank" rel="noopener" href="' + esc(s.info) + '">Why</a>' : '') + buy + '</span></div>';
+        + '<span class="links">' + why + buy + '</span></div>';
     }).join('');
     var suppCard = '<div class="hp-mini hp-card"><div class="tag">Your supplements</div>'
-      + '<div class="hp-supp" style="margin-top:10px">' + supps + '</div></div>';
+      + '<div class="hp-supp" style="margin-top:6px">' + supps + '</div>'
+      + seeAll(plan.supplementsSeeAll || '/supplements-guide', 'Full supplements guide') + '</div>';
 
     // questions
     var qs = plan.questions.map(function (q) {
-      return '<a target="_blank" rel="noopener" href="' + esc(q.href) + '">' + esc(q.label) + ' <span>\u2192</span></a>';
+      return '<a target="_blank" rel="noopener" href="' + esc(q.href) + '">' + esc(q.label) + ' <span class="ar">\u2192</span></a>';
     }).join('');
     var qCard = '<div class="hp-mini hp-card"><div class="tag">Your questions</div>'
-      + '<div class="hp-qs" style="margin-top:8px">' + qs + '</div></div>';
+      + '<div class="hp-qs" style="margin-top:6px">' + qs + '</div>'
+      + seeAll(plan.questionsSeeAll || '/ask', 'See all questions') + '</div>';
+
+    // recommended reading (articles)
+    var arts = (plan.articles || []).map(function (a) {
+      return '<a target="_blank" rel="noopener" href="' + esc(a.href) + '">' + esc(a.label) + ' <span class="ar">\u2192</span></a>';
+    }).join('');
+    var readingSec = arts
+      ? ('<div class="hp-sec"><div class="hp-h"><h3>Recommended reading</h3><span class="k">matched to your goal</span></div>'
+         + '<div class="hp-card" style="padding:4px 20px"><div class="hp-qs">' + arts + '</div></div>'
+         + seeAll(plan.articlesSeeAll || '/resources', 'Browse more articles') + '</div>')
+      : '';
+
+    // more tools (excluding the primary one already shown)
+    var moreTools = (plan.tools || []).filter(function (t) { return t.href !== plan.tool.href; }).map(function (t) {
+      return '<a class="hp-tchip" target="_blank" rel="noopener" href="' + esc(t.href) + '">' + esc(t.name) + ' <span class="ar">\u2192</span></a>';
+    }).join('');
+    var moreToolsSec = moreTools
+      ? ('<div class="hp-sec"><div class="hp-h"><h3>More tools for you</h3><span class="k">free \u00b7 on this site</span></div>'
+         + '<div class="hp-tools">' + moreTools + '</div></div>')
+      : '';
 
     var node = el(
       '<div>'
@@ -363,13 +400,18 @@
       + '<div class="hp-sec"><div class="hp-h"><h3>Your top 3 levers</h3><span class="k">ranked for your profile</span></div>'
       + '<div class="hp-card">' + levers + '</div></div>'
 
-      + '<div class="hp-sec"><div class="hp-h"><h3>Foods picked for you</h3><span class="k">scored for your goal</span></div>'
+      + '<div class="hp-sec"><div class="hp-h"><h3>Foods picked for you</h3><span class="k">tap any food for the full guide</span></div>'
       + '<div class="hp-card hp-foods">'
       + '<div class="hp-fcol good"><h5>\u25C9 Lean into these</h5>' + boosters + '</div>'
-      + '<div class="hp-fcol limit"><h5>\u25C9 Ease off these</h5>' + limits + '</div></div></div>'
+      + '<div class="hp-fcol limit"><h5>\u25C9 Ease off these</h5>' + limits + '</div></div>'
+      + seeAll(plan.foods.seeAll || '/foods', 'See all 80 foods') + '</div>'
 
-      + '<div class="hp-sec"><div class="hp-h"><h3>Built for you, from the site</h3><span class="k">one tool \u00b7 your supplements \u00b7 your questions</span></div>'
+      + readingSec
+
+      + '<div class="hp-sec"><div class="hp-h"><h3>Built for you, from the site</h3><span class="k">your tool \u00b7 supplements \u00b7 questions</span></div>'
       + '<div class="hp-row">' + tool + suppCard + qCard + '</div></div>'
+
+      + moreToolsSec
 
       + '<div class="hp-week"><div class="badge">THIS<br>WEEK</div><div style="flex:1">'
       + '<div class="hp-eye">Your one step</div><h3>' + esc(plan.thisWeek) + '</h3>'
@@ -383,7 +425,6 @@
       + 'Always speak to a qualified clinician about your symptoms and before changing medication or supplements.</p>'
       + '</div>'
     );
-
     node.querySelector('[data-act="restart"]').addEventListener('click', function () {
       clearSaved(); state.answers = {}; state.step = 0;
       state.root.style.setProperty('--accent', BRAND.men.accent);
