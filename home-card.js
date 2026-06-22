@@ -10,7 +10,7 @@
   var FONT = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap';
 
   var CSS = [
-    '#sh-card{position:absolute;right:4%;bottom:7%;width:32%;min-width:250px;max-width:348px;z-index:5;padding:22px 18px;background:linear-gradient(180deg,rgba(8,17,30,.06),rgba(8,17,30,.52));backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}',
+    '#sh-card{position:absolute;right:4%;top:9%;width:32%;min-width:250px;max-width:348px;z-index:5;padding:22px 18px;background:linear-gradient(180deg,rgba(8,17,30,.10),rgba(8,17,30,.55));backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}',
     '#sh-card .sh-eye{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:#E7D8B0;margin-bottom:8px;text-shadow:0 1px 6px rgba(0,0,0,.5)}',
     '#sh-card .sh-h{font-family:Fraunces,Georgia,serif;font-weight:500;color:#fff;font-size:21px;line-height:1.16;margin:0 0 7px;text-shadow:0 1px 10px rgba(0,0,0,.55)}',
     '#sh-card .sh-p{font-size:12.5px;color:rgba(255,255,255,.9);margin:0 0 15px;line-height:1.45;text-shadow:0 1px 8px rgba(0,0,0,.5)}',
@@ -71,6 +71,32 @@
            h1.parentElement;
   }
 
+  var heroEl = null, cardEl = null;
+
+  function findEyebrow(scope) {
+    var all = scope.querySelectorAll('*');
+    var best = null, bestLen = 999;
+    for (var i = 0; i < all.length; i++) {
+      var t = (all[i].textContent || '').trim();
+      if (/evidence-based hormone health/i.test(t) && t.length < 90 && t.length < bestLen) {
+        best = all[i]; bestLen = t.length;
+      }
+    }
+    return best;
+  }
+
+  function alignTop() {
+    if (!heroEl || !cardEl) return;
+    var eb = findEyebrow(heroEl);
+    if (!eb) return;
+    try {
+      var hr = heroEl.getBoundingClientRect();
+      var er = eb.getBoundingClientRect();
+      var top = er.top - hr.top;
+      if (top > 0) { cardEl.style.top = Math.round(top) + 'px'; cardEl.style.bottom = 'auto'; }
+    } catch (e) {}
+  }
+
   function build() {
     if (document.getElementById('sh-card') || document.getElementById('sh-band')) return true;
     var hero = findHero();
@@ -88,6 +114,14 @@
     band.id = 'sh-band';
     band.innerHTML = INNER;
     if (hero.parentNode) hero.parentNode.insertBefore(band, hero.nextSibling);
+
+    heroEl = hero; cardEl = card;
+    alignTop();
+    // re-align after fonts/layout settle and on resize
+    setTimeout(alignTop, 400);
+    setTimeout(alignTop, 1200);
+    window.addEventListener('load', alignTop);
+    window.addEventListener('resize', alignTop);
     return true;
   }
 
