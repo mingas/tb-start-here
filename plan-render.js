@@ -315,7 +315,7 @@
 
     // levers
     var levers = plan.levers.map(function (l, i) {
-      var link = l.link ? ' <a href="' + esc(l.link) + '">Learn more \u2192</a>' : '';
+      var link = l.link ? ' <a target="_blank" rel="noopener" href="' + esc(l.link) + '">Learn more \u2192</a>' : '';
       return '<div class="hp-lever' + (i === 0 ? ' big' : '') + '"><div class="rank">' + (i + 1) + '</div>'
         + '<div><h4>' + esc(l.title) + '</h4><p>' + esc(l.why) + link + '</p></div></div>';
     }).join('');
@@ -323,7 +323,7 @@
     // foods
     function foodRow(f, cls) {
       var pct = Math.max(6, Math.min(100, f.score));
-      return '<a class="hp-food ' + cls + '" href="' + esc(f.href) + '" style="text-decoration:none">'
+      return '<a class="hp-food ' + cls + '" target="_blank" rel="noopener" href="' + esc(f.href) + '" style="text-decoration:none">'
         + '<span class="nm">' + esc(f.name) + '</span>'
         + '<span class="bar"><i style="width:' + pct + '%"></i></span>'
         + '<span class="sc">' + f.score + '</span></a>';
@@ -334,21 +334,21 @@
     // tool
     var tool = '<div class="hp-mini tool hp-card"><div class="tag">Your tool</div>'
       + '<h4>' + esc(plan.tool.name) + '</h4><p>' + esc(plan.tool.blurb) + '</p>'
-      + '<a class="go" href="' + esc(plan.tool.href) + '">Open the tool \u2192</a></div>';
+      + '<a class="go" target="_blank" rel="noopener" href="' + esc(plan.tool.href) + '">Open the tool \u2192</a></div>';
 
     // supplements
     var supps = plan.supplements.map(function (s) {
-      var buy = s.recommends ? '<a class="buy" href="' + esc(s.recommends) + '" rel="sponsored nofollow" target="_blank">Shop \u2192</a>' : '';
+      var buy = s.recommends ? '<a class="buy" href="' + esc(s.recommends) + '" rel="sponsored nofollow noopener" target="_blank">Shop \u2192</a>' : '';
       return '<div class="s"><span>' + esc(s.name) + '</span><span class="links">'
         + '<span class="hp-tier ' + esc(s.tier) + '">' + tierLabel(s.tier) + '</span>'
-        + (s.info ? '<a href="' + esc(s.info) + '">Why</a>' : '') + buy + '</span></div>';
+        + (s.info ? '<a target="_blank" rel="noopener" href="' + esc(s.info) + '">Why</a>' : '') + buy + '</span></div>';
     }).join('');
     var suppCard = '<div class="hp-mini hp-card"><div class="tag">Your supplements</div>'
       + '<div class="hp-supp" style="margin-top:10px">' + supps + '</div></div>';
 
     // questions
     var qs = plan.questions.map(function (q) {
-      return '<a href="' + esc(q.href) + '">' + esc(q.label) + ' <span>\u2192</span></a>';
+      return '<a target="_blank" rel="noopener" href="' + esc(q.href) + '">' + esc(q.label) + ' <span>\u2192</span></a>';
     }).join('');
     var qCard = '<div class="hp-mini hp-card"><div class="tag">Your questions</div>'
       + '<div class="hp-qs" style="margin-top:8px">' + qs + '</div></div>';
