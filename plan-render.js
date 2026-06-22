@@ -436,8 +436,19 @@
       var s = loadSaved() || saved;
       s.weekIndex = (s.weekIndex || 0) + 1;
       save(s);
-      renderResult(s);
-      try { state.root.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+      // Swap ONLY the weekly step text in place — keeps the user on the step so the change is visible.
+      try {
+        var np = window.HormonePlan.buildPlan(s.answers, { weekIndex: s.weekIndex });
+        var h = node.querySelector('.hp-week h3');
+        if (h && np && np.thisWeek) h.textContent = np.thisWeek;
+        var card = node.querySelector('.hp-week');
+        if (card) {
+          card.style.transition = 'box-shadow .25s ease, transform .25s ease';
+          card.style.boxShadow = '0 0 0 2px var(--gold), 0 12px 30px -16px rgba(17,41,74,.18)';
+          card.style.transform = 'translateY(-2px)';
+          setTimeout(function () { card.style.boxShadow = ''; card.style.transform = ''; }, 550);
+        }
+      } catch (e) {}
     });
 
     mount(node);
