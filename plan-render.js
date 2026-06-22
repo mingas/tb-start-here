@@ -128,6 +128,12 @@
   + '.hp-q{padding:30px 28px}'
   + '.hp-q h2{font-family:var(--serif);font-weight:500;color:var(--accent);font-size:23px;line-height:1.16;margin:0 0 4px}'
   + '.hp-q .qsub{font-size:13.5px;color:var(--muted);margin-bottom:18px}'
+  + '.hp-intro{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:14px;padding:18px 20px;margin-bottom:14px}'
+  + '.hp-intro h2{font-family:var(--serif);font-weight:500;color:var(--accent);font-size:21px;line-height:1.18;margin:5px 0 6px}'
+  + '.hp-intro p{font-size:13px;color:var(--muted);margin:0 0 9px}'
+  + '.hp-intro ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}'
+  + '.hp-intro li{font-size:13px;color:var(--ink);padding-left:22px;position:relative;line-height:1.4}'
+  + '.hp-intro li:before{content:"\u2713";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}'
   + '.hp-opts{display:flex;flex-direction:column;gap:9px}'
   + '.hp-opt{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:14px 15px;font:500 14.5px var(--sans);color:var(--ink);cursor:pointer;transition:.13s}'
   + '.hp-opt:hover{border-color:var(--gold-soft);background:#FFFDF8}'
@@ -239,6 +245,18 @@
   /* ====================================================================== *
    * RENDER: klausimai
    * ====================================================================== */
+  var INTRO_HTML =
+    '<div class="hp-intro">'
+    + '<div class="hp-eye">Your free hormone plan</div>'
+    + '<h2>Answer 4 quick questions, get your plan</h2>'
+    + '<p>Takes about 60 seconds, no email. You\u2019ll get:</p>'
+    + '<ul>'
+    + '<li>The few things worth focusing on first</li>'
+    + '<li>Foods, supplements &amp; habits matched to you</li>'
+    + '<li>One small step to start this week</li>'
+    + '</ul>'
+    + '</div>';
+
   function renderQuestion() {
     var qs = currentQuestions();
     var total = qs.length;
@@ -259,8 +277,10 @@
     var nextLabel = state.step === total - 1 ? 'See my plan \u2192' : 'Continue';
     var nextDis = chosen ? '' : ' disabled';
 
+    var intro = state.step === 0 ? INTRO_HTML : '';
     var node = el(
-      '<div class="hp-card hp-q">'
+      '<div class="hp-flow">' + intro
+      + '<div class="hp-card hp-q">'
       + '<div class="hp-prog"><div class="hp-bars">' + bars + '</div><span class="lbl">' + (state.step + 1) + ' of ' + total + '</span></div>'
       + '<h2>' + esc(q.title) + '</h2>'
       + '<div class="qsub">' + esc(q.sub) + '</div>'
@@ -268,7 +288,7 @@
       + '<div class="hp-foot">' + backBtn
       + '<button class="hp-btn" data-act="next"' + nextDis + '>' + nextLabel + '</button>'
       + '<span class="hp-micro">60 seconds \u00b7 no email</span></div>'
-      + '</div>'
+      + '</div></div>'
     );
 
     // events
@@ -398,6 +418,14 @@
       + '<p>' + esc(plan.mirror.sub) + '</p>'
       + '<div class="hp-pills">' + pills + '</div></div>'
 
+      + '<div class="hp-week"><div class="badge">THIS<br>WEEK</div><div style="flex:1">'
+      + '<div class="hp-eye">Your one step</div><h3>' + esc(plan.thisWeek) + '</h3>'
+      + '<p>One small change with the biggest payoff. We\u2019ll swap it for a new step next week.</p></div></div>'
+
+      + '<div class="hp-actions">'
+      + '<button class="hp-btn" data-act="next-week">Give me next week\u2019s step</button>'
+      + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button></div>'
+
       + '<div class="hp-sec"><div class="hp-h"><h3>Your top 3 levers</h3><span class="k">ranked for your profile</span></div>'
       + '<div class="hp-card">' + levers + '</div></div>'
 
@@ -413,14 +441,6 @@
       + '<div class="hp-row">' + tool + suppCard + qCard + '</div></div>'
 
       + moreToolsSec
-
-      + '<div class="hp-week"><div class="badge">THIS<br>WEEK</div><div style="flex:1">'
-      + '<div class="hp-eye">Your one step</div><h3>' + esc(plan.thisWeek) + '</h3>'
-      + '<p>One small change with the biggest payoff. We\u2019ll swap it for a new step next week.</p></div></div>'
-
-      + '<div class="hp-actions">'
-      + '<button class="hp-btn" data-act="next-week">Give me next week\u2019s step</button>'
-      + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button></div>'
 
       + '<p class="hp-disc">This plan is general wellbeing information, not medical advice or a diagnosis. '
       + 'Always speak to a qualified clinician about your symptoms and before changing medication or supplements.</p>'
