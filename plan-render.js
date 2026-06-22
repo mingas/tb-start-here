@@ -171,18 +171,19 @@
   + '.hp-food .sc{font-family:var(--serif);font-size:15px;width:30px;text-align:right}.hp-food.g .sc{color:var(--sage)}.hp-food.l .sc{color:var(--rose)}'
   /* recs */
   + '.hp-row{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}'
-  + '.hp-mini{padding:18px}.hp-mini .tag{font:600 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}'
+  + '.hp-mini{padding:18px;display:flex;flex-direction:column}.hp-mini .tag{font:600 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}'
   + '.hp-mini h4{font-family:var(--serif);font-weight:500;color:var(--accent);font-size:16px;margin:7px 0 6px}'
   + '.hp-mini p{font-size:12.5px;color:var(--muted);margin:0 0 12px}'
-  + '.hp-mini a.go{font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:1px}'
+  + '.hp-mini a.go{font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:1px;margin-top:auto;align-self:flex-start}'
   + '.hp-mini.tool{background:linear-gradient(160deg,var(--accent2),var(--accent));color:#EAEFF6}'
   + '.hp-mini.tool .tag{color:var(--gold-soft)}.hp-mini.tool h4{color:#fff}.hp-mini.tool p{color:#C4D0DE}.hp-mini.tool a.go{color:#fff;border-color:rgba(255,255,255,.35)}'
   + '.hp-supp{display:flex;flex-direction:column;gap:0}'
-  + '.hp-supp .s{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13.5px;padding:11px 0;border-top:1px solid var(--line)}.hp-supp .s:first-child{border-top:none}'
-  + '.hp-supp .s .nm{font-weight:600;color:var(--accent)}'
-  + '.hp-supp .s .links{display:flex;gap:14px;align-items:center;margin-left:auto}'
-  + '.hp-supp .s a{font-size:12px;text-decoration:none;color:var(--accent);font-weight:600;border-bottom:1.5px solid var(--gold-soft);padding-bottom:1px;white-space:nowrap}'
-  + '.hp-supp .s a:hover{border-color:var(--gold-d)}.hp-supp .s a.buy{color:var(--gold-d)}'
+  + '.hp-supp .s{padding:11px 0;border-top:1px solid var(--line)}.hp-supp .s:first-child{border-top:none;padding-top:2px}'
+  + '.hp-supp .top{display:flex;align-items:center;gap:8px;justify-content:space-between}'
+  + '.hp-supp .nm{font-weight:600;color:var(--accent);font-size:13.5px;line-height:1.3}'
+  + '.hp-supp .links{display:flex;gap:18px;align-items:center;margin-top:7px}'
+  + '.hp-supp .links a{font-size:12px;text-decoration:none;color:var(--accent);font-weight:600;border-bottom:1.5px solid var(--gold-soft);padding-bottom:1px;white-space:nowrap}'
+  + '.hp-supp .links a:hover{border-color:var(--gold-d)}.hp-supp .links a.buy{color:var(--gold-d)}'
   + '.hp-tier{font:700 9.5px var(--sans);padding:2px 7px;border-radius:5px;letter-spacing:.03em;text-transform:uppercase}'
   + '.hp-tier.works{background:var(--sage-soft);color:#3C6147}.hp-tier.some{background:#F4E9CF;color:#8A6B23}.hp-tier.unproven{background:#EEE7DA;color:#7A7160}'
   + '.hp-qs{display:flex;flex-direction:column}.hp-qs a{display:flex;justify-content:space-between;gap:10px;padding:11px 8px;margin:0 -8px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--accent);font-size:13.5px;font-weight:500;border-radius:8px;transition:background .12s}.hp-qs a:last-child{border-bottom:none}.hp-qs a:hover{background:#FBF7EC;text-decoration:underline}.hp-qs a .ar{color:var(--gold-d);flex:none;text-decoration:none}'
@@ -192,7 +193,7 @@
   + '.hp-tools{display:flex;flex-wrap:wrap;gap:9px}'
   + '.hp-tchip{display:inline-flex;align-items:center;gap:7px;background:var(--paper);border:1.5px solid var(--line);border-radius:11px;padding:9px 14px;font:600 12.5px var(--sans);color:var(--accent);text-decoration:none;transition:.13s}'
   + '.hp-tchip:hover{border-color:var(--gold-soft);background:#FFFDF8;transform:translateY(-1px)}.hp-tchip .ar{color:var(--gold-d)}'
-  + '.hp-mini .hp-seeall{margin-top:14px}'
+  + '.hp-mini .hp-seeall{margin-top:auto;padding-top:14px;align-self:flex-start}'
   /* this week */
   + '.hp-week{background:var(--paper);border:1px solid var(--gold-soft);border-radius:18px;box-shadow:0 1px 2px rgba(17,41,74,.05),0 12px 30px -16px rgba(17,41,74,.18);padding:22px;display:flex;gap:18px;align-items:center;margin-top:22px}'
   + '.hp-week .badge{flex:none;width:52px;height:52px;border-radius:14px;background:var(--gold);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:12px;text-align:center;line-height:1.1}'
@@ -353,11 +354,11 @@
 
     // supplements (clean aligned rows)
     var supps = plan.supplements.map(function (s) {
-      var why = s.info ? '<a href="' + esc(s.info) + '" target="_blank" rel="noopener">Why \u2192</a>' : '';
+      var why = s.info ? '<a href="' + esc(s.info) + '" target="_blank" rel="noopener">Why it helps \u2192</a>' : '';
       var buy = s.recommends ? '<a class="buy" href="' + esc(s.recommends) + '" rel="sponsored nofollow noopener" target="_blank">Shop \u2192</a>' : '';
-      return '<div class="s"><span class="nm">' + esc(s.name) + '</span>'
-        + '<span class="hp-tier ' + esc(s.tier) + '">' + tierLabel(s.tier) + '</span>'
-        + '<span class="links">' + why + buy + '</span></div>';
+      return '<div class="s"><div class="top"><span class="nm">' + esc(s.name) + '</span>'
+        + '<span class="hp-tier ' + esc(s.tier) + '">' + tierLabel(s.tier) + '</span></div>'
+        + '<div class="links">' + why + buy + '</div></div>';
     }).join('');
     var suppCard = '<div class="hp-mini hp-card"><div class="tag">Your supplements</div>'
       + '<div class="hp-supp" style="margin-top:6px">' + supps + '</div>'
