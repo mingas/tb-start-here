@@ -183,6 +183,11 @@
   + '.hp-mini a.go{font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:1px;margin-top:auto;align-self:flex-start}'
   + '.hp-mini.tool{background:linear-gradient(160deg,var(--accent2),var(--accent));color:#EAEFF6}'
   + '.hp-mini.tool .tag{color:var(--gold-soft)}.hp-mini.tool h4{color:#fff}.hp-mini.tool p{color:#C4D0DE}.hp-mini.tool a.go{color:#fff;border-color:rgba(255,255,255,.35)}'
+  + '.hp-mini.tool .hp-tgfx{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:6px 0 2px}'
+  + '.hp-mini.tool .hp-tgfx-cap{font-size:11.5px;color:#C4D0DE;text-align:center;max-width:165px;line-height:1.4}'
+  + '.hp-mini.tool a.go{margin-top:6px}'
+  + '.hp-legend{font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}'
+  + '.hp-legend b{font-weight:600;color:var(--accent)}.hp-legend .g{color:var(--sage)}.hp-legend .l{color:var(--rose)}'
   + '.hp-supp{display:flex;flex-direction:column;gap:0}'
   + '.hp-supp .s{padding:11px 0;border-top:1px solid var(--line)}.hp-supp .s:first-child{border-top:none;padding-top:2px}'
   + '.hp-supp .top{display:flex;align-items:center;gap:8px;justify-content:space-between}'
@@ -197,8 +202,8 @@
   + '.hp-seeall{display:inline-flex;align-items:center;gap:6px;margin-top:13px;font:600 13px var(--sans);color:var(--accent);text-decoration:none;border-bottom:2px solid var(--gold-soft);padding-bottom:2px}'
   + '.hp-seeall:hover{border-color:var(--gold-d)}.hp-seeall .ar{color:var(--gold-d)}'
   + '.hp-tools{display:flex;flex-wrap:wrap;gap:9px}'
-  + '.hp-tchip{display:inline-flex;align-items:center;gap:7px;background:var(--paper);border:1.5px solid var(--line);border-radius:11px;padding:9px 14px;font:600 12.5px var(--sans);color:var(--accent);text-decoration:none;transition:.13s}'
-  + '.hp-tchip:hover{border-color:var(--gold-soft);background:#FFFDF8;transform:translateY(-1px)}.hp-tchip .ar{color:var(--gold-d)}'
+  + '.hp-tchip{display:inline-flex;align-items:center;gap:7px;background:#FFFDF8;border:1.5px solid var(--gold-soft);border-radius:11px;padding:11px 16px;font:600 13px var(--sans);color:var(--accent);text-decoration:none;box-shadow:0 1px 2px rgba(17,41,74,.06);transition:.13s}'
+  + '.hp-tchip:hover{border-color:var(--gold-d);background:#fff;transform:translateY(-1px);box-shadow:0 7px 16px -8px rgba(17,41,74,.25)}.hp-tchip .ar{color:var(--gold-d)}'
   + '.hp-mini .hp-seeall{margin-top:auto;padding-top:14px;align-self:flex-start}'
   /* this week */
   + '.hp-week{background:var(--paper);border:1px solid var(--gold-soft);border-radius:18px;box-shadow:0 1px 2px rgba(17,41,74,.05),0 12px 30px -16px rgba(17,41,74,.18);padding:22px;display:flex;gap:18px;align-items:center;margin-top:22px}'
@@ -206,7 +211,7 @@
   + '.hp-week h3{font-family:var(--serif);font-weight:500;color:var(--accent);font-size:17px;margin:2px 0 3px}'
   + '.hp-week p{font-size:12.5px;color:var(--muted);margin:0}'
   + '.hp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center}'
-  + '.hp-disc{font-size:11.5px;color:var(--muted);margin-top:18px;text-align:center;max-width:620px;margin-left:auto;margin-right:auto}'
+  + '.hp-disc{font-size:11.5px;color:var(--muted);margin-top:32px;padding-top:22px;border-top:1px solid var(--line);text-align:center;max-width:620px;margin-left:auto;margin-right:auto}'
   /* responsive */
   + '@media(max-width:680px){.hp-wrap{padding:0 16px}.hp-foods{grid-template-columns:1fr}.hp-row{grid-template-columns:1fr}.hp-mirror h1{font-size:23px}.hp-q h2{font-size:20px}}';
 
@@ -370,6 +375,14 @@
     // primary tool (navy card)
     var tool = '<div class="hp-mini tool hp-card"><div class="tag">Your tool</div>'
       + '<h4>' + esc(plan.tool.name) + '</h4><p>' + esc(plan.tool.blurb) + '</p>'
+      + '<div class="hp-tgfx">'
+      + '<svg width="104" height="104" viewBox="0 0 120 120" aria-hidden="true">'
+      + '<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="11"/>'
+      + '<circle cx="60" cy="60" r="50" fill="none" stroke="#E7D8B0" stroke-width="11" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="88" transform="rotate(-90 60 60)"/>'
+      + '<path d="M44 67 L60 49 L76 67" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'
+      + '<path d="M60 49 L60 74" stroke="#fff" stroke-width="5" stroke-linecap="round"/>'
+      + '</svg>'
+      + '<span class="hp-tgfx-cap">Your result in minutes \u2014 free, no email.</span></div>'
       + '<a class="go" target="_blank" rel="noopener" href="' + esc(plan.tool.href) + '">Open the tool \u2192</a></div>';
 
     // supplements (clean aligned rows)
@@ -430,6 +443,7 @@
       + '<div class="hp-card">' + levers + '</div></div>'
 
       + '<div class="hp-sec"><div class="hp-h"><h3>Foods picked for you</h3><span class="k">tap any food for the full guide</span></div>'
+      + '<div class="hp-legend">Each food is scored <b>0\u2013100</b> for how hormone-friendly it is \u2014 <b class="g">green = lean into</b>, <b class="l">red = limit</b>.</div>'
       + '<div class="hp-card hp-foods">'
       + '<div class="hp-fcol good"><h5>\u25C9 Lean into these</h5>' + boosters + '</div>'
       + '<div class="hp-fcol limit"><h5>\u25C9 Ease off these</h5>' + limits + '</div></div>'
