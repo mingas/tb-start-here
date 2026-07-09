@@ -27,7 +27,7 @@
 (function (root) {
   'use strict';
 
-  var VERSION = '2.1.0';
+  var VERSION = '2.2.0';
 
   /* ---- Goal zodynas ir zmoniski pavadinimai ------------------------------ */
   var GOALS = {
@@ -591,20 +591,20 @@
       /* a food with no track is for both; a tracked food is only ever shown to that track */
       function okT(f) { return !f.track || f.track === track; }
       function comp(f) { return rel(f.name + ' ' + f.kw + ' ' + f.group, kws) * 3 + (found.indexOf(f.slug) !== -1 ? 2 : 0); }
-      function mk(f, hi) {
-        var r = rel(f.name + ' ' + f.kw, kws);
-        var sc = hi ? Math.min(98, 80 + r * 4 + (found.indexOf(f.slug) !== -1 ? 6 : 0)) : Math.max(12, 28 - r * 3);
-        return { name: f.name, score: sc, href: '/foods/' + f.slug };
+      /* No invented 0-100 score. The only honest facts we hold per food are its
+         CMS effect (Supports / Limit) and its group. Order already encodes relevance. */
+      function mk(f) {
+        return { name: f.name, group: f.group, href: '/foods/' + f.slug };
       }
       var sup = DATA_FOODS.filter(function (f) { return f.effect === 'Supports' && okT(f); })
         .map(function (f) { return { f: f, c: comp(f) }; }).sort(function (a, b) { return b.c - a.c; });
-      var boosters = sup.slice(0, 7).map(function (o) { return mk(o.f, true); });
+      var boosters = sup.slice(0, 7).map(function (o) { return mk(o.f); });
       var lim = DATA_FOODS.filter(function (f) { return f.effect === 'Limit' && okT(f); })
         .map(function (f) { return { f: f, c: rel(f.f ? '' : (f.name + ' ' + f.kw), kws) }; });
       // recompute limits cleanly
       lim = DATA_FOODS.filter(function (f) { return f.effect === 'Limit' && okT(f); })
         .map(function (f) { return { f: f, c: rel(f.name + ' ' + f.kw, kws) }; }).sort(function (a, b) { return b.c - a.c; });
-      var limits = lim.slice(0, 4).map(function (o) { return mk(o.f, false); });
+      var limits = lim.slice(0, 4).map(function (o) { return mk(o.f); });
       return { boosters: boosters, limits: limits, seeAll: '/foods' };
     }
 

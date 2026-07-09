@@ -172,9 +172,8 @@
   + '.hp-food:hover{background:#FBF7EC}.hp-food:hover .nm{text-decoration:underline}'
   + '.hp-food .nm{flex:1;font-size:13.5px;color:var(--accent);font-weight:500;display:flex;align-items:center;gap:6px}'
   + '.hp-food .nm .ar{color:var(--muted);font-size:11px;opacity:.5;text-decoration:none;display:inline-block}'
-  + '.hp-food .bar{width:60px;height:6px;border-radius:3px;background:#EDE7D7;overflow:hidden}.hp-food .bar i{display:block;height:100%}'
-  + '.hp-food.g .bar i{background:var(--sage)}.hp-food.l .bar i{background:var(--rose)}'
-  + '.hp-food .sc{font-family:var(--serif);font-size:15px;width:30px;text-align:right}.hp-food.g .sc{color:var(--sage)}.hp-food.l .sc{color:var(--rose)}'
+  + '.hp-food .grp{font-size:11px;letter-spacing:.02em;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;color:var(--muted)}'
+  + '.hp-food.g .grp{color:var(--sage);border-color:var(--sage)}'
   /* recs */
   + '.hp-row{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}'
   + '.hp-mini{padding:18px;display:flex;flex-direction:column}.hp-mini .tag{font:600 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}'
@@ -359,11 +358,10 @@
 
     // foods (deep-linked, clearly clickable)
     function foodRow(f, cls) {
-      var pct = Math.max(6, Math.min(100, f.score));
+      var chip = (cls === 'g' && f.group) ? ('<span class="grp">' + esc(f.group) + '</span>') : '';
       return '<a class="hp-food ' + cls + '" target="_blank" rel="noopener" href="' + esc(f.href) + '">'
         + '<span class="nm">' + esc(f.name) + '<span class="ar">\u2197</span></span>'
-        + '<span class="bar"><i style="width:' + pct + '%"></i></span>'
-        + '<span class="sc">' + f.score + '</span></a>';
+        + chip + '</a>';
     }
     var boosters = plan.foods.boosters.map(function (f) { return foodRow(f, 'g'); }).join('');
     var limits = plan.foods.limits.map(function (f) { return foodRow(f, 'l'); }).join('');
@@ -461,7 +459,7 @@
       + '<div class="hp-card">' + levers + '</div></div>'
 
       + '<div class="hp-sec"><div class="hp-h"><h3>Foods picked for you</h3><span class="k">tap any food for the full guide</span></div>'
-      + '<div class="hp-legend">Each food is scored <b>0\u2013100</b> for how hormone-friendly it is \u2014 <b class="g">green = lean into</b>, <b class="l">red = limit</b>.</div>'
+      + '<div class="hp-legend">Chosen for your goal and ordered by how closely each one matches it. <b class="g">Green: lean into these.</b> <b class="l">Red: ease off these.</b></div>'
       + '<div class="hp-card hp-foods">'
       + '<div class="hp-fcol good"><h5>\u25C9 Lean into these</h5>' + boosters + '</div>'
       + '<div class="hp-fcol limit"><h5>\u25C9 Ease off these</h5>' + limits + '</div></div>'
