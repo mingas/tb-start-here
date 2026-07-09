@@ -424,6 +424,24 @@
          + '<div class="hp-tools">' + moreTools + '</div></div>')
       : '';
 
+    // the deepest-intent moment on the site: one restrained line about the book
+    var ctaSec = (plan.meta.track === 'women')
+      ? ('<div class="hp-sec"><div class="hp-h"><h3>The full method</h3><span class="k">coming to the site shortly</span></div>'
+         + '<div class="hp-card" style="padding:20px 22px">'
+         + '<p style="margin:0 0 14px;color:var(--muted);line-height:1.6">This plan is the first few steps. '
+         + '<em>The Hormone Blueprint</em>, the women\u2019s companion, is written and arriving on the site shortly: '
+         + 'the complete method for perimenopause, menopause and beyond.</p>'
+         + '<a class="hp-seeall" target="_blank" rel="noopener" href="/hormone-blueprint">See what\u2019s coming <span class="ar">\u2192</span></a>'
+         + '</div></div>')
+      : ('<div class="hp-sec"><div class="hp-h"><h3>The full method</h3><span class="k">if you want the whole picture</span></div>'
+         + '<div class="hp-card" style="padding:20px 22px">'
+         + '<p style="margin:0 0 14px;color:var(--muted);line-height:1.6">This plan is the first few steps. '
+         + '<em>The Testosterone Blueprint</em> is the whole method, chapter by chapter: the science, the protocols '
+         + 'and how to read your own blood work.</p>'
+         + '<a class="hp-seeall" target="_blank" rel="noopener" href="/book">About the book <span class="ar">\u2192</span></a>'
+         + '<a class="hp-seeall" target="_blank" rel="noopener" href="/free-guide" style="margin-left:18px">Or start with the free 7-day guide <span class="ar">\u2192</span></a>'
+         + '</div></div>');
+
     var node = el(
       '<div>'
       + '<div class="hp-mirror"><div class="hp-eye">Your plan</div>'
@@ -447,7 +465,7 @@
       + '<div class="hp-card hp-foods">'
       + '<div class="hp-fcol good"><h5>\u25C9 Lean into these</h5>' + boosters + '</div>'
       + '<div class="hp-fcol limit"><h5>\u25C9 Ease off these</h5>' + limits + '</div></div>'
-      + seeAll(plan.foods.seeAll || '/foods', 'See all 80 foods') + '</div>'
+      + seeAll(plan.foods.seeAll || '/foods', 'See all foods') + '</div>'
 
       + readingSec
 
@@ -455,6 +473,8 @@
       + '<div class="hp-row">' + tool + suppCard + qCard + '</div></div>'
 
       + moreToolsSec
+
+      + ctaSec
 
       + '<p class="hp-disc">This plan is general wellbeing information, not medical advice or a diagnosis. '
       + 'Always speak to a qualified clinician about your symptoms and before changing medication or supplements.</p>'
