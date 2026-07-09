@@ -174,6 +174,20 @@
   + '.hp-food .nm .ar{color:var(--muted);font-size:11px;opacity:.5;text-decoration:none;display:inline-block}'
   + '.hp-food .grp{font-size:11px;letter-spacing:.02em;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;color:var(--muted)}'
   + '.hp-food.g .grp{color:var(--sage);border-color:var(--sage)}'
+  + '.hp-weeks{list-style:none;margin:0;padding:0}'
+  + '.hp-weeks li{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}.hp-weeks li:last-child{border-bottom:none}'
+  + '.hp-weeks .n{flex:0 0 26px;height:26px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;'
+  +   'font-family:var(--serif);font-size:13px;color:var(--muted);margin-top:1px}'
+  + '.hp-weeks .t{flex:1;font-size:14px;line-height:1.55;color:var(--accent);opacity:.82}'
+  + '.hp-wknote{margin:10px 2px 0;font-size:12.5px;color:var(--muted)}'
+  + '@media print{'
+  +   '.hp-actions,.hp-seeall,.hp-tools{display:none!important}'
+  +   '.hp-card{box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}'
+  +   '.hp-sec,.hp-week,.hp-food,.hp-weeks li{break-inside:avoid;page-break-inside:avoid}'
+  +   '.hp-foods{grid-template-columns:1fr 1fr}'
+  +   'a{text-decoration:none}'
+  +   '.hp-mirror h1{font-size:21px}'
+  + '}'
   /* recs */
   + '.hp-row{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}'
   + '.hp-mini{padding:18px;display:flex;flex-direction:column}.hp-mini .tag{font:600 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}'
@@ -366,6 +380,15 @@
     var boosters = plan.foods.boosters.map(function (f) { return foodRow(f, 'g'); }).join('');
     var limits = plan.foods.limits.map(function (f) { return foodRow(f, 'l'); }).join('');
 
+    /* weeklySteps has always been built (15 curated steps per profile) and never shown. */
+    function weeksHtml(ws, wi) {
+      var out = '', n = Math.min(4, ws.length - 1);
+      for (var i = 1; i <= n; i++) {
+        out += '<li><span class="n">' + (i + 1) + '</span><span class="t">' + esc(ws[(wi + i) % ws.length]) + '</span></li>';
+      }
+      return out;
+    }
+
     function seeAll(href, label) {
       return '<a class="hp-seeall" target="_blank" rel="noopener" href="' + esc(href) + '">' + esc(label) + ' <span class="ar">\u2192</span></a>';
     }
@@ -440,6 +463,14 @@
          + '<a class="hp-seeall" target="_blank" rel="noopener" href="/free-guide" style="margin-left:18px">Or start with the free 7-day guide <span class="ar">\u2192</span></a>'
          + '</div></div>');
 
+    var ws = plan.weeklySteps || [];
+    var wi = saved.weekIndex || 0;
+    var weeksSec = (ws.length > 1)
+      ? ('<div class="hp-sec"><div class="hp-h"><h3>Your next four weeks</h3><span class="k">one small step at a time</span></div>'
+         + '<div class="hp-card" style="padding:4px 20px"><ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi) + '</ol></div>'
+         + '<p class="hp-wknote">' + ws.length + ' steps in all, one a week. Come back and we\u2019ll surface the next one.</p></div>')
+      : '';
+
     var node = el(
       '<div>'
       + '<div class="hp-mirror"><div class="hp-eye">Your plan</div>'
@@ -453,7 +484,10 @@
 
       + '<div class="hp-actions">'
       + '<button class="hp-btn" data-act="next-week">Give me next week\u2019s step</button>'
-      + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button></div>'
+      + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button>'
+      + '<button class="hp-btn ghost" data-act="print">Save or print your plan</button></div>'
+
+      + weeksSec
 
       + '<div class="hp-sec"><div class="hp-h"><h3>Your top 3 levers</h3><span class="k">ranked for your profile</span></div>'
       + '<div class="hp-card">' + levers + '</div></div>'
@@ -484,6 +518,9 @@
       state.root.style.setProperty('--accent2', BRAND.men.accent2);
       renderQuestion();
     });
+    var pb = node.querySelector('[data-act="print"]');
+    if (pb) pb.addEventListener('click', function () { try { window.print(); } catch (e) {} });
+
     node.querySelector('[data-act="next-week"]').addEventListener('click', function () {
       var s = loadSaved() || saved;
       s.weekIndex = (s.weekIndex || 0) + 1;
@@ -493,6 +530,8 @@
         var np = window.HormonePlan.buildPlan(s.answers, { weekIndex: s.weekIndex });
         var h = node.querySelector('.hp-week h3');
         if (h && np && np.thisWeek) h.textContent = np.thisWeek;
+        var ol = node.querySelector('#hp-weeks');
+        if (ol && np && np.weeklySteps) ol.innerHTML = weeksHtml(np.weeklySteps, s.weekIndex);
         var card = node.querySelector('.hp-week');
         if (card) {
           card.style.transition = 'box-shadow .25s ease, transform .25s ease';
