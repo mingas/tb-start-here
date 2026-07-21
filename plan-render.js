@@ -43,6 +43,69 @@
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
   }
 
+  /* ---- URL <-> profile (shareable plans) -------------------------------- */
+  var URL_KEYS = { t: 'track', g: 'goal', a: 'ageBand', s: 'stage' };
+  var VALID = {
+    track: { men: 1, women: 1 },
+    goal: { energy: 1, libido: 1, mood: 1, weight: 1, sleep: 1, strength: 1, optimise: 1, flushes: 1, cycles: 1, brainfog: 1 },
+    ageBand: { u30: 1, '30s': 1, '40s': 1, '50s': 1, '60plus': 1 },
+    stage: { starting: 1, normal_but_off: 1, have_bloods: 1 }
+  };
+  function readURL() {
+    try {
+      var q = window.location.search.replace(/^\?/, '');
+      if (!q) return null;
+      var out = {}, parts = q.split('&');
+      for (var i = 0; i < parts.length; i++) {
+        var kv = parts[i].split('=');
+        var key = URL_KEYS[kv[0]];
+        if (key) out[key] = decodeURIComponent(kv[1] || '');
+      }
+      if (!out.track || !out.goal || !out.ageBand || !out.stage) return null;
+      if (!VALID.track[out.track] || !VALID.goal[out.goal] || !VALID.ageBand[out.ageBand] || !VALID.stage[out.stage]) return null;
+      /* goal must belong to the track (women goals differ from men) */
+      var menGoals = { energy: 1, libido: 1, mood: 1, weight: 1, sleep: 1, strength: 1, optimise: 1 };
+      var womenGoals = { flushes: 1, mood: 1, cycles: 1, brainfog: 1, weight: 1, energy: 1, optimise: 1 };
+      if (out.track === 'men' && !menGoals[out.goal]) return null;
+      if (out.track === 'women' && !womenGoals[out.goal]) return null;
+      return out;
+    } catch (e) { return null; }
+  }
+  function planURL(answers) {
+    return window.location.pathname
+      + '?t=' + encodeURIComponent(answers.track)
+      + '&g=' + encodeURIComponent(answers.goal)
+      + '&a=' + encodeURIComponent(answers.ageBand)
+      + '&s=' + encodeURIComponent(answers.stage);
+  }
+  function writeURL(answers) {
+    try { window.history.replaceState(null, '', planURL(answers)); } catch (e) {}
+  }
+  function clearURL() {
+    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
+  }
+  function sameAnswers(a, b) {
+    return a && b && a.track === b.track && a.goal === b.goal && a.ageBand === b.ageBand && a.stage === b.stage;
+  }
+
+  /* ---- weekly auto-advance: the plan moves forward on its own ----------- */
+  function weeksElapsed(saved) {
+    try {
+      var t = saved && saved.savedAt;
+      if (!t) return 0;
+      var w = Math.floor((Date.now() - t) / (7 * 86400000));
+      return w > 0 ? w : 0;
+    } catch (e) { return 0; }
+  }
+  function effectiveWeek(saved) {
+    var manual = (saved && saved.weekIndex) || 0;
+    var auto = weeksElapsed(saved);
+    return auto > manual ? auto : manual;
+  }
+  function track(action, label) {
+    try { if (typeof window.gtag === 'function') window.gtag('event', action, { event_category: 'start_here', event_label: label || '' }); } catch (e) {}
+  }
+
   /* ---- maza util: sukurti elementa is HTML stringo ---------------------- */
   function el(html) {
     var d = document.createElement('div');
@@ -180,6 +243,7 @@
   +   'font-family:var(--serif);font-size:13px;color:var(--muted);margin-top:1px}'
   + '.hp-weeks .t{flex:1;font-size:14px;line-height:1.55;color:var(--accent);opacity:.82}'
   + '.hp-wknote{margin:10px 2px 0;font-size:12.5px;color:var(--muted)}'
+  + '.hp-done-ct{color:var(--gold);font-weight:600}'
   + '@media print{'
   +   '.hp-actions,.hp-seeall,.hp-tools{display:none!important}'
   +   '.hp-card{box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}'
@@ -339,12 +403,16 @@
       + '<p class="hp-micro" style="margin-top:6px">Pulling the right pieces from the library for you\u2026</p></div>');
     mount(node);
 
+    var prev = loadSaved();
     var saved = {
       answers: state.answers,
       savedAt: Date.now(),
-      weekIndex: (loadSaved() && loadSaved().weekIndex) || 0
+      weekIndex: (prev && sameAnswers(prev.answers, state.answers) && prev.weekIndex) || 0,
+      done: (prev && sameAnswers(prev.answers, state.answers) && prev.done) || []
     };
     save(saved);
+    writeURL(saved.answers);
+    track('plan_built', saved.answers.track + ':' + saved.answers.goal + ':' + saved.answers.stage);
 
     setTimeout(function () { renderResult(saved); }, 650);
   }
@@ -464,11 +532,22 @@
          + '</div></div>');
 
     var ws = plan.weeklySteps || [];
-    var wi = saved.weekIndex || 0;
+    /* Weekly auto-advance: the active step moves forward one per week since the
+       plan was made, without the user pressing anything. Manual advances are
+       kept (we take whichever is further ahead), and the plan is rebuilt on the
+       effective index so thisWeek matches. */
+    var wi = effectiveWeek(saved);
+    if (wi !== (saved.weekIndex || 0)) {
+      saved.weekIndex = wi;
+      save(saved);
+      try { plan = window.HormonePlan.buildPlan(saved.answers, { weekIndex: wi }); } catch (e) {}
+    }
+    var doneArr = saved.done || [];
+    var doneCount = doneArr.length;
     var weeksSec = (ws.length > 1)
       ? ('<div class="hp-sec"><div class="hp-h"><h3>Your next four weeks</h3><span class="k">one small step at a time</span></div>'
          + '<div class="hp-card" style="padding:4px 20px"><ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi) + '</ol></div>'
-         + '<p class="hp-wknote">' + ws.length + ' steps in all, one a week. Come back and we\u2019ll surface the next one.</p></div>')
+         + '<p class="hp-wknote">' + ws.length + ' steps in all, one a week. The active step moves on automatically; come back any week and it will be waiting.</p></div>')
       : '';
 
     var node = el(
@@ -479,11 +558,13 @@
       + '<div class="hp-pills">' + pills + '</div></div>'
 
       + '<div class="hp-week"><div class="badge">THIS<br>WEEK</div><div style="flex:1">'
-      + '<div class="hp-eye">Your one step</div><h3>' + esc(plan.thisWeek) + '</h3>'
-      + '<p>One small change with the biggest payoff. We\u2019ll swap it for a new step next week.</p></div></div>'
+      + '<div class="hp-eye">Your one step' + (doneCount > 0 ? ' \u00b7 <span class="hp-done-ct">' + doneCount + ' step' + (doneCount === 1 ? '' : 's') + ' done \u2713</span>' : '') + '</div><h3>' + esc(plan.thisWeek) + '</h3>'
+      + '<p>One small change with the biggest payoff. It moves on to the next step automatically each week.</p></div></div>'
 
       + '<div class="hp-actions">'
-      + '<button class="hp-btn" data-act="next-week">Give me next week\u2019s step</button>'
+      + '<button class="hp-btn" data-act="done-step">Mark this step done \u2713</button>'
+      + '<button class="hp-btn ghost" data-act="next-week">Skip to the next step</button>'
+      + '<button class="hp-btn ghost" data-act="copy-link">Copy plan link</button>'
       + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button>'
       + '<button class="hp-btn ghost" data-act="print">Save or print your plan</button></div>'
 
@@ -513,13 +594,61 @@
       + '</div>'
     );
     node.querySelector('[data-act="restart"]').addEventListener('click', function () {
-      clearSaved(); state.answers = {}; state.step = 0;
+      clearSaved(); clearURL(); state.answers = {}; state.step = 0;
       state.root.style.setProperty('--accent', BRAND.men.accent);
       state.root.style.setProperty('--accent2', BRAND.men.accent2);
       renderQuestion();
     });
     var pb = node.querySelector('[data-act="print"]');
     if (pb) pb.addEventListener('click', function () { try { window.print(); } catch (e) {} });
+
+    /* Mark this step done: records progress, then advances to the next step. */
+    var db = node.querySelector('[data-act="done-step"]');
+    if (db) db.addEventListener('click', function () {
+      var s = loadSaved() || saved;
+      s.done = s.done || [];
+      var cur = s.weekIndex || 0;
+      if (s.done.indexOf(cur) === -1) s.done.push(cur);
+      s.weekIndex = cur + 1;
+      save(s);
+      track('step_done', String(s.done.length));
+      try {
+        var np = window.HormonePlan.buildPlan(s.answers, { weekIndex: s.weekIndex });
+        var h = node.querySelector('.hp-week h3');
+        if (h && np && np.thisWeek) h.textContent = np.thisWeek;
+        var ol = node.querySelector('#hp-weeks');
+        if (ol && np && np.weeklySteps) ol.innerHTML = weeksHtml(np.weeklySteps, s.weekIndex);
+        var eye = node.querySelector('.hp-week .hp-eye');
+        if (eye) eye.innerHTML = 'Your one step \u00b7 <span class="hp-done-ct">' + s.done.length + ' step' + (s.done.length === 1 ? '' : 's') + ' done \u2713</span>';
+        var card = node.querySelector('.hp-week');
+        if (card) {
+          card.style.transition = 'box-shadow .25s ease, transform .25s ease';
+          card.style.boxShadow = '0 0 0 2px var(--gold), 0 12px 30px -16px rgba(17,41,74,.18)';
+          card.style.transform = 'translateY(-2px)';
+          setTimeout(function () { card.style.boxShadow = ''; card.style.transform = ''; }, 550);
+        }
+        db.textContent = 'Done \u2713 next step ready';
+        setTimeout(function () { db.textContent = 'Mark this step done \u2713'; }, 1400);
+      } catch (e) {}
+    });
+
+    /* Copy plan link: a shareable URL that rebuilds this exact plan. */
+    var cb = node.querySelector('[data-act="copy-link"]');
+    if (cb) cb.addEventListener('click', function () {
+      var url = window.location.origin + planURL(saved.answers);
+      function ok() { cb.textContent = 'Link copied \u2713'; setTimeout(function () { cb.textContent = 'Copy plan link'; }, 1600); track('plan_link_copied', saved.answers.track + ':' + saved.answers.goal); }
+      function fallback() {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); document.body.removeChild(ta); ok();
+        } catch (e) { try { window.prompt('Copy your plan link:', url); } catch (e2) {} }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(ok, fallback);
+      } else { fallback(); }
+    });
 
     node.querySelector('[data-act="next-week"]').addEventListener('click', function () {
       var s = loadSaved() || saved;
@@ -582,8 +711,28 @@
 
   function boot() {
     var saved = loadSaved();
+    var fromURL = readURL();
+
+    if (fromURL) {
+      /* A shared or bookmarked plan link. Keep the visitor's own progress
+         (weekIndex, done steps) when the profile matches; otherwise build
+         fresh from the URL without touching a different saved plan's data. */
+      if (saved && sameAnswers(saved.answers, fromURL)) {
+        setAccent(fromURL.track);
+        renderResult(saved);
+      } else {
+        var fresh = { answers: fromURL, savedAt: Date.now(), weekIndex: 0, done: [] };
+        save(fresh);
+        setAccent(fromURL.track);
+        track('plan_from_url', fromURL.track + ':' + fromURL.goal);
+        renderResult(fresh);
+      }
+      return;
+    }
+
     if (saved && saved.answers && saved.answers.track && saved.answers.goal) {
       setAccent(saved.answers.track);
+      writeURL(saved.answers);    // returning visitor: reflect their plan in the URL
       renderResult(saved);        // grizes vartotojas -> iskart planas
     } else {
       state.answers = {}; state.step = 0;
