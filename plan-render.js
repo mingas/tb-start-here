@@ -240,6 +240,16 @@
   + '.hp-weeks{list-style:none;margin:0;padding:0}'
   + '.hp-weeks li{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}.hp-weeks li:last-child{border-bottom:none}'
   + '.hp-weeks .n{flex:0 0 26px;height:26px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;'
+  + 'background:#fff;cursor:pointer;padding:0;position:relative;transition:background .13s,border-color .13s,color .13s}'
+  + '.hp-weeks .n:hover{border-color:var(--gold-d);background:#FFFBF1}'
+  + '.hp-weeks .n:focus-visible{outline:2px solid var(--gold-d);outline-offset:2px}'
+  + '.hp-weeks .n .mk{display:none;font-size:13px;line-height:1;color:#fff}'
+  + '.hp-weeks li.done .n{background:var(--gold);border-color:var(--gold);color:#fff}'
+  + '.hp-weeks li.done .n .mk{display:block}.hp-weeks li.done .n .num{display:none}'
+  + '.hp-weeks li.done .t{text-decoration:line-through;opacity:.45}'
+  + '.hp-weeks li.cur .t{opacity:1;font-weight:600}'
+  + '.hp-weeks .now{font-style:normal;font-weight:600;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-d);margin-left:7px;white-space:nowrap}'
+  + '.hp-weeks .n .num{'
   +   'font-family:var(--serif);font-size:13px;color:var(--muted);margin-top:1px}'
   + '.hp-weeks .t{flex:1;font-size:14px;line-height:1.55;color:var(--accent);opacity:.82}'
   + '.hp-wknote{margin:10px 2px 0;font-size:12.5px;color:var(--muted)}'
@@ -449,10 +459,29 @@
     var limits = plan.foods.limits.map(function (f) { return foodRow(f, 'l'); }).join('');
 
     /* weeklySteps has always been built (15 curated steps per profile) and never shown. */
-    function weeksHtml(ws, wi) {
-      var out = '', n = Math.min(4, ws.length - 1);
-      for (var i = 1; i <= n; i++) {
-        out += '<li><span class="n">' + (i + 1) + '</span><span class="t">' + esc(ws[(wi + i) % ws.length]) + '</span></li>';
+    /* Steps list: the active step first, then the next four. Each row can be
+       ticked off. Step indexes are canonical (0..steps-1) so they stay stable
+       however far the weekly counter has advanced. */
+    function doneSet(arr, len) {
+      var m = {};
+      arr = arr || [];
+      for (var i = 0; i < arr.length; i++) {
+        var v = Number(arr[i]);
+        if (!isNaN(v) && len > 0) m[((v % len) + len) % len] = 1;
+      }
+      return m;
+    }
+    function weeksHtml(ws, wi, dArr) {
+      if (!ws || !ws.length) return '';
+      var out = '', n = Math.min(5, ws.length), dm = doneSet(dArr, ws.length);
+      for (var i = 0; i < n; i++) {
+        var idx = ((wi + i) % ws.length + ws.length) % ws.length;
+        var isDone = !!dm[idx];
+        var cls = (isDone ? ' done' : '') + (i === 0 ? ' cur' : '');
+        out += '<li class="' + cls.replace(/^ /, '') + '">'
+          + '<button type="button" class="n" data-idx="' + idx + '" role="checkbox" aria-checked="' + (isDone ? 'true' : 'false') + '" '
+          + 'aria-label="Mark this step done"><span class="mk">\u2713</span><span class="num">' + (idx + 1) + '</span></button>'
+          + '<span class="t">' + esc(ws[idx]) + (i === 0 ? ' <em class="now">this week</em>' : '') + '</span></li>';
       }
       return out;
     }
@@ -545,8 +574,8 @@
     var doneArr = saved.done || [];
     var doneCount = doneArr.length;
     var weeksSec = (ws.length > 1)
-      ? ('<div class="hp-sec"><div class="hp-h"><h3>Your next four weeks</h3><span class="k">one small step at a time</span></div>'
-         + '<div class="hp-card" style="padding:4px 20px"><ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi) + '</ol></div>'
+      ? ('<div class="hp-sec"><div class="hp-h"><h3>Your next steps</h3><span class="k">tick them off as you go</span></div>'
+         + '<div class="hp-card" style="padding:4px 20px"><ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi, doneArr) + '</ol></div>'
          + '<p class="hp-wknote">' + ws.length + ' steps in all, one a week. The active step moves on automatically; come back any week and it will be waiting.</p></div>')
       : '';
 
@@ -562,7 +591,6 @@
       + '<p>One small change with the biggest payoff. It moves on to the next step automatically each week.</p></div></div>'
 
       + '<div class="hp-actions">'
-      + '<button class="hp-btn" data-act="done-step">Mark this step done \u2713</button>'
       + '<button class="hp-btn ghost" data-act="next-week">Skip to the next step</button>'
       + '<button class="hp-btn ghost" data-act="copy-link">Copy plan link</button>'
       + '<button class="hp-btn ghost" data-act="restart">Start over / edit answers</button>'
@@ -602,34 +630,45 @@
     var pb = node.querySelector('[data-act="print"]');
     if (pb) pb.addEventListener('click', function () { try { window.print(); } catch (e) {} });
 
-    /* Mark this step done: records progress, then advances to the next step. */
-    var db = node.querySelector('[data-act="done-step"]');
-    if (db) db.addEventListener('click', function () {
+    /* Tick a step off. Pure toggle: it records what you have done and never
+       moves the week on by itself (time does that, or the skip button). */
+    function countDone(s) {
+      var dm = doneSet(s.done, (ws && ws.length) || 0), c = 0, k;
+      for (k in dm) { if (dm.hasOwnProperty(k)) c++; }
+      return c;
+    }
+    function paintDoneBadge(s) {
+      var eye = node.querySelector('.hp-week .hp-eye');
+      if (!eye) return;
+      var c = countDone(s);
+      eye.innerHTML = 'Your one step' + (c > 0 ? ' \u00b7 <span class="hp-done-ct">' + c + ' step' + (c === 1 ? '' : 's') + ' done \u2713</span>' : '');
+    }
+    var weeksList = node.querySelector('#hp-weeks');
+    if (weeksList) weeksList.addEventListener('click', function (ev) {
+      var btn = ev.target && ev.target.closest ? ev.target.closest('button.n') : null;
+      if (!btn || !weeksList.contains(btn)) return;
+      var idx = parseInt(btn.getAttribute('data-idx'), 10);
+      if (isNaN(idx)) return;
       var s = loadSaved() || saved;
-      s.done = s.done || [];
-      var cur = s.weekIndex || 0;
-      if (s.done.indexOf(cur) === -1) s.done.push(cur);
-      s.weekIndex = cur + 1;
+      s.done = (s.done || []).slice();
+      var len = (ws && ws.length) || 0;
+      var dm = doneSet(s.done, len);
+      if (dm[idx]) {
+        /* untick: drop every stored value that maps to this step */
+        s.done = s.done.filter(function (v) {
+          var n = Number(v);
+          return isNaN(n) || len <= 0 || ((n % len) + len) % len !== idx;
+        });
+      } else {
+        s.done.push(idx);
+      }
       save(s);
-      track('step_done', String(s.done.length));
-      try {
-        var np = window.HormonePlan.buildPlan(s.answers, { weekIndex: s.weekIndex });
-        var h = node.querySelector('.hp-week h3');
-        if (h && np && np.thisWeek) h.textContent = np.thisWeek;
-        var ol = node.querySelector('#hp-weeks');
-        if (ol && np && np.weeklySteps) ol.innerHTML = weeksHtml(np.weeklySteps, s.weekIndex);
-        var eye = node.querySelector('.hp-week .hp-eye');
-        if (eye) eye.innerHTML = 'Your one step \u00b7 <span class="hp-done-ct">' + s.done.length + ' step' + (s.done.length === 1 ? '' : 's') + ' done \u2713</span>';
-        var card = node.querySelector('.hp-week');
-        if (card) {
-          card.style.transition = 'box-shadow .25s ease, transform .25s ease';
-          card.style.boxShadow = '0 0 0 2px var(--gold), 0 12px 30px -16px rgba(17,41,74,.18)';
-          card.style.transform = 'translateY(-2px)';
-          setTimeout(function () { card.style.boxShadow = ''; card.style.transform = ''; }, 550);
-        }
-        db.textContent = 'Done \u2713 next step ready';
-        setTimeout(function () { db.textContent = 'Mark this step done \u2713'; }, 1400);
-      } catch (e) {}
+      var nowDone = !dm[idx];
+      var li = btn.parentNode;
+      if (li) { if (nowDone) li.classList.add('done'); else li.classList.remove('done'); }
+      btn.setAttribute('aria-checked', nowDone ? 'true' : 'false');
+      paintDoneBadge(s);
+      if (nowDone) track('step_done', String(countDone(s)));
     });
 
     /* Copy plan link: a shareable URL that rebuilds this exact plan. */
@@ -660,7 +699,7 @@
         var h = node.querySelector('.hp-week h3');
         if (h && np && np.thisWeek) h.textContent = np.thisWeek;
         var ol = node.querySelector('#hp-weeks');
-        if (ol && np && np.weeklySteps) ol.innerHTML = weeksHtml(np.weeklySteps, s.weekIndex);
+        if (ol && np && np.weeklySteps) ol.innerHTML = weeksHtml(np.weeklySteps, s.weekIndex, s.done);
         var card = node.querySelector('.hp-week');
         if (card) {
           card.style.transition = 'box-shadow .25s ease, transform .25s ease';
