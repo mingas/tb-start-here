@@ -249,6 +249,16 @@
   + '.hp-weeks li.done .t{text-decoration:line-through;opacity:.45}'
   + '.hp-weeks li.cur .t{opacity:1;font-weight:600}'
   + '.hp-weeks .now{font-style:normal;font-weight:600;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-d);margin-left:7px;white-space:nowrap}'
+  /* discoverability: the circles are tickable, so say so and show it on hover */
+  + '.hp-wkhint{display:flex;align-items:center;gap:8px;margin:0 0 4px;padding-bottom:12px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.45}'
+  + '.hp-wkhint-ic{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px dashed var(--gold-d);color:var(--gold-d);display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1}'
+  + '.hp-weeks .n{border-style:dashed}'
+  + '.hp-weeks li.done .n{border-style:solid}'
+  + '.hp-weeks .n:hover .num{display:none}'
+  + '.hp-weeks .n:hover .mk{display:block;color:var(--gold-d)}'
+  + '.hp-weeks li.done .n:hover .mk{color:#fff}'
+  /* bigger tap target than the visual circle, for thumbs */
+  + '.hp-weeks .n::before{content:"";position:absolute;top:-9px;right:-9px;bottom:-9px;left:-9px;border-radius:50%}'
   + '.hp-weeks .n .num{'
   +   'font-family:var(--serif);font-size:13px;color:var(--muted);margin-top:1px}'
   + '.hp-weeks .t{flex:1;font-size:14px;line-height:1.55;color:var(--accent);opacity:.82}'
@@ -575,7 +585,9 @@
     var doneCount = doneArr.length;
     var weeksSec = (ws.length > 1)
       ? ('<div class="hp-sec"><div class="hp-h"><h3>Your next steps</h3><span class="k">tick them off as you go</span></div>'
-         + '<div class="hp-card" style="padding:4px 20px"><ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi, doneArr) + '</ol></div>'
+         + '<div class="hp-card" style="padding:16px 20px 4px">'
+         + '<p class="hp-wkhint"><span class="hp-wkhint-ic">\u2713</span> Tap a circle to tick a step off once you\u2019ve done it. Your ticks are saved on this device.</p>'
+         + '<ol class="hp-weeks" id="hp-weeks">' + weeksHtml(ws, wi, doneArr) + '</ol></div>'
          + '<p class="hp-wknote">' + ws.length + ' steps in all, one a week. The active step moves on automatically; come back any week and it will be waiting.</p></div>')
       : '';
 
